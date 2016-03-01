@@ -27,8 +27,8 @@
     <input ng-model="me.x" type="number" class="coord_input"></input>
     <input ng-model="me.y" type="number" class="coord_input"></input>
     <input ng-model="me.z" type="number" class="coord_input"></input>
-    <button ng-click="recalculate_distances();">Update</button>
-    <input ng-model="search.system_name" ng-model-options="{debounce: 1000}"></input>
+    <button ng-click="search_system_name();">Searc System</button>
+    <input ng-model="search.system_name" ng-model-options="{debounce: 1000}" placeholder="System Name where you"></input>
     <span ng-show="search.system_name_wrong" style="color: 'red'">There is no system with this name or edsm.net don't know coords</span>
   </div>
 
@@ -36,22 +36,24 @@
   <table class="table table-hover table-bordered">
     <thead>
       <tr>
-        <td>X</td>
-        <td>Y</td>
-        <td>Z</td>
-        <td>Name</td>
-        <td>Distance</td>
+        <td>Station Name</td>
+        <td>System Name</td>
+        <td>Ls Dist</td>
+        <td>Price</td>
+        <td>Supply (Min/Max)</td>
+        <td>Dist</td>
         <td></td>
       </tr>
     </thead>
     <tbody>
-      <tr ng-click="select_current(system);" ng-repeat="system in rare_systems | orderBy: 'distance'" style="cursor: pointer;">
-        <td>{{ system.x | number: 2}}</td>
-        <td>{{ system.y | number: 2}}</td>
-        <td>{{ system.z | number: 2}}</td>
-        <td>{{ system.name }}</td>
+      <tr  ng-repeat="system in rare_systems | orderBy: 'distance'" style="cursor: pointer;">
+        <td>{{ system.station_name }}</td>
+        <td>{{ system.system_name }}</td>
+        <td>{{ system.dist_ls | number }}</td>
+        <td>{{ system.price | number }}</td>
+        <td>{{ system.supply_rate_min }}/{{ system.supply_rate_max }}</td>
         <td>{{ system.distance | number: 2 }}</td>
-        <td><button>+</button></td>
+        <td><button type="button" class="btn btn-group-xs btn-primary" ng-click="select_current(system);">I'm here</button></td>
       </tr>
     </tbody>
   </table>

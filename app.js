@@ -15,7 +15,7 @@ app.controller("main", [
             z: 0.0,
         }
         $scope.search = {
-            system_name: "",
+            system_name: "Sol",
             system_name_wrong: false
         }
 
@@ -29,12 +29,14 @@ app.controller("main", [
 
             $scope.recalculate_distances();
         }, true);
-        $scope.$watch("search", function (oldVal, newVal){
-            if (oldVal == newVal)
-                return;
+        // $scope.$watch("search", function (oldVal, newVal){
+        //     if (oldVal == newVal)
+        //         return;
 
+        $scope.search_system_name = function (){
             $scope.list_systems($scope.search.system_name);
-        }, true);
+        }
+        // }, true);
 
         $scope.recalculate_distances = function (){
             systems.get_rare_systems($scope.me).then(function (obj){
@@ -68,7 +70,7 @@ app.service("rest_data", [
     function ($http){
         var self = this;
         self.get_rare_systems = function (){
-            return $http.get("/rare_systems.csv");
+            return $http.get("/rare_data.csv");
         }
         self.get_coords_by_name = function (name){
             return $http.get("http://www.edsm.net/api-v1/system?coords=1&systemName="+name);
@@ -126,13 +128,27 @@ app.service("systems", [
                 var lines = response.data.split("\n");
 
                 for (var i=0;i<lines.length;i++) {
+                    if (i==0){
+                        // skip header row
+                        continue
+                    }
+                    // MAX CAP,SUPPLY RATE,PRICE,ITEM,DIST(Ls),STATION,SYSTEM,x,y,z,SUPPLY RATE MIN,SUPPLY RATE MAX
                     line = lines[i].split(",");
 
                     obj.push({
-                        x: line[0],
-                        y: line[1],
-                        z: line[2],
-                        name: line[3],
+                        max_cap:         line[0],
+                        supply_rate:     line[1],
+                        price:           line[2],
+                        item:            line[3],
+                        dist_ls:         line[4],
+                        station_name:    line[5],
+                        system_name:     line[6],
+                        x:               line[7],
+                        y:               line[8],
+                        z:               line[9],
+                        supply_rate_min: line[10],
+                        supply_rate_max: line[11],
+
                     })
                 }
                 return obj;
