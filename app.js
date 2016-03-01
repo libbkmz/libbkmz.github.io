@@ -16,32 +16,78 @@ app.controller("main", [
         }
         $scope.search = {
             system_name: "Sol",
-            system_name_wrong: false
+            system_name_wrong: false,
+            target_limit: 160.0,
         }
-
-        // systems.get_rare_systems($scope.me).then(function (obj){
-        //  $scope.rare_systems = obj;
-        // });
+        $scope.current_sort = function (el){
+            if ($scope.trading.bought_list.length > 0){
+                // return "min_distance_of_influence";
+                return el.min_distance_of_influence;
+            }else{
+                return el.distance;
+                // return "distance";
+            }
+        };
 
         $scope.$watch("me", function (oldVal, newVal){
-            // if (oldVal == newVal)
-            //  return;
+            if (oldVal == newVal){
+                $scope._init_systems();
+                return;
+            }
 
-            $scope.recalculate_distances();
+            $scope.update_distances();
         }, true);
-        // $scope.$watch("search", function (oldVal, newVal){
-        //     if (oldVal == newVal)
-        //         return;
+
+        $scope.$watch("search", function (oldVal, newVal){
+            if (oldVal == newVal)
+                return;
+            $scope.update_distances();
+        }, true);
 
         $scope.search_system_name = function (){
             $scope.list_systems($scope.search.system_name);
         }
-        // }, true);
 
-        $scope.recalculate_distances = function (){
+        $scope._init_systems = function (){
             systems.get_rare_systems($scope.me).then(function (obj){
                 $scope.rare_systems = obj;
             });
+        }
+
+        $scope.update_distances = function (){
+            systems.get_rare_systems($scope.me).then(function (obj){
+                $scope.rare_systems = obj;
+
+                var any_bought = $scope.trading.bought_list.length > 0 ? true: false;
+
+                for (var i=0;i<$scope.rare_systems.length;i++){
+                    var item = $scope.rare_systems[i];
+                    if (!item.bought){
+                        for (var j=0;j<$scope.trading.bought_list.length;j++)
+                        {
+                            var bought_item = $scope.trading.bought_list[j];
+                            item.distance_of_influence.push(
+                               Math.sqrt(Math.pow(item.x-bought_item.x, 2)+Math.pow(item.y-bought_item.y, 2)+Math.pow(item.z-bought_item.z, 2)) 
+                            )
+
+                        }
+                        item.min_distance_of_influence =  Math.min.apply(Math, item.distance_of_influence);
+                    }
+
+                    var color = 255;
+                    if (any_bought){
+                        var color_tmp = item.min_distance_of_influence - parseFloat($scope.search.target_limit);
+                        if (color_tmp > 0){
+                            color = 150-parseInt(color_tmp);
+                        }
+                    }
+
+                    item.row_color[0] = 255;
+                    item.row_color[1] = color;
+                    item.row_color[2] = color
+                    
+                }
+            })
         };
 
         $scope.select_current = function (obj){
@@ -50,6 +96,7 @@ app.controller("main", [
                 y: parseFloat(obj.y),
                 z: parseFloat(obj.z)
             }
+            $scope.update_distances();
         };
 
         $scope.list_systems = function (name) {
@@ -61,6 +108,38 @@ app.controller("main", [
                     $scope.me = response.data.coords;
                 }
             });
+        }
+        $scope.convert_to_color = function (list){
+            var out = "rgb("+list[0]+", "+list[1]+", "+list[2]+")";
+            return out;
+        }
+        $scope.trading = {
+            bought_list: [],
+
+            bought_button: function (system){
+                $scope.select_current(system);
+                
+                system.bought = true;
+                $scope.trading.bought_list.push(system);
+                $scope.trading._update_smth();
+            },
+            remove_button: function (system){
+                console.log($scope.trading.bought_list.length);
+
+                $scope.trading.bought_list = $scope.trading.bought_list.filter(function (el){
+                    return el != system;
+                })                
+                system.bought = false;
+                $scope.trading._update_smth();
+            },
+            _update_smth: function (){
+                $scope.update_distances();
+                // if ($scope.trading.bought_list.length > 0){
+                //     $scope.current_sort = "min_distance_of_influence";
+                // }else{
+                //     $scope.current_sort = "distance";
+                // }
+            }
         }
     }
 ]);
@@ -143,11 +222,22 @@ app.service("systems", [
                         dist_ls:         line[4],
                         station_name:    line[5],
                         system_name:     line[6],
-                        x:               line[7],
-                        y:               line[8],
-                        z:               line[9],
+                        x:               parseFloat(line[7]),
+                        y:               parseFloat(line[8]),
+                        z:               parseFloat(line[9]),
                         supply_rate_min: line[10],
                         supply_rate_max: line[11],
+
+                        // private values for better visual effect
+                        distance: 0.0,
+                        bought: false,
+                        distance_of_influence: new Array(),
+                        min_distance_of_influence: 0.0,
+                        row_color: [255, 255, 255],
+
+
+
+
 
                     })
                 }

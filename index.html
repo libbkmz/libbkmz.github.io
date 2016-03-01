@@ -29,37 +29,72 @@
     <input ng-model="me.z" type="number" class="coord_input"></input>
     <button ng-click="search_system_name();">Searc System</button>
     <input ng-model="search.system_name" ng-model-options="{debounce: 1000}" placeholder="System Name where you"></input>
+    <input ng-model="search.target_limit" placeholder="Min sell distance"></input>
     <span ng-show="search.system_name_wrong" style="color: 'red'">There is no system with this name or edsm.net don't know coords</span>
   </div>
 
-  <div style="width: 640px;">
-  <table class="table table-hover table-bordered">
-    <thead>
-      <tr>
-        <td>Station Name</td>
-        <td>System Name</td>
-        <td>Ls Dist</td>
-        <td>Price</td>
-        <td>Supply (Min/Max)</td>
-        <td>Dist</td>
-        <td></td>
-      </tr>
-    </thead>
-    <tbody>
-      <tr  ng-repeat="system in rare_systems | orderBy: 'distance'" style="cursor: pointer;">
-        <td>{{ system.station_name }}</td>
-        <td>{{ system.system_name }}</td>
-        <td>{{ system.dist_ls | number }}</td>
-        <td>{{ system.price | number }}</td>
-        <td>{{ system.supply_rate_min }}/{{ system.supply_rate_max }}</td>
-        <td>{{ system.distance | number: 2 }}</td>
-        <td>
-          <button type="button" class="btn btn-group-xs btn-primary" ng-click="select_current(system);">I'm here</button>
-          <button type="button" class="btn btn-group-xs btn-warning" ng-click="select_current(system);">Bought</button>
-          </td>
-      </tr>
-    </tbody>
-  </table>
+  <div>
+  <div style="width: 700px; display: inline-block;float: left;">
+    <table class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <td>Station Name</td>
+          <td>System Name</td>
+          <td>Ls Dist</td>
+          <td>Price</td>
+          <td>Supply (Min/Max)</td>
+          <td>Dist</td>
+          <td ng-show="trading.bought_list.length > 0">Min dist</td>
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr  ng-repeat="system in rare_systems | filter:{ bought: false } | orderBy: current_sort" ng-style="{ 'cursor':'pointer', 'background-color': convert_to_color(system.row_color) }">
+          <td>{{ system.station_name }}</td>
+          <td>{{ system.system_name }}</td>
+          <td>{{ system.dist_ls | number }}</td>
+          <td>{{ system.price | number }}</td>
+          <td>{{ system.supply_rate_min }}/{{ system.supply_rate_max }}</td>
+          <td>{{ system.distance | number: 2 }}</td>
+          <td ng-show="trading.bought_list.length > 0">{{ system.min_distance_of_influence | number: 2 }}</td>
+          <td style="width: 130px">
+            <button type="button" class="btn btn-xs btn-primary" ng-click="select_current(system);">I'm here</button>
+            <button type="button" class="btn btn-xs btn-warning" ng-click="trading.bought_button(system);">Bought</button>
+            </td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <div style="width: 640px; display: inline-block;float:right;position: fixed;">
+    <table class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <td>Station Name</td>
+          <td>System Name</td>
+          <td>Ls Dist</td>
+          <td>Price</td>
+          <td>Supply (Min/Max)</td>
+          <td>Dist</td>
+          
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+         <tr  ng-repeat="system in rare_systems | filter:{ bought: true } | orderBy: 'distance'" style="cursor: pointer;">
+          <td>{{ system.station_name }}</td>
+          <td>{{ system.system_name }}</td>
+          <td>{{ system.dist_ls | number }}</td>
+          <td>{{ system.price | number }}</td>
+          <td>{{ system.supply_rate_min }}/{{ system.supply_rate_max }}</td>
+          <td>{{ system.distance | number: 2 }}</td>
+
+          <td>
+            <button type="button" class="btn btn-xs btn-primary" ng-click="select_current(system);">I'm here</button>
+            <button type="button" class="btn btn-xs btn-info" ng-click="trading.remove_button(system);">Remove</button>
+            </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   </body>
