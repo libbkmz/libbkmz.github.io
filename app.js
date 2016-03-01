@@ -30,7 +30,10 @@ app.controller("main", [
             $scope.recalculate_distances();
         }, true);
         $scope.$watch("search", function (oldVal, newVal){
+            if (oldVal == newVal)
+                return;
 
+            $scope.list_systems($scope.search.system_name);
         }, true);
 
         $scope.recalculate_distances = function (){
