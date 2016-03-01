@@ -32,9 +32,13 @@ app.controller("main", [
             });
         };
 
-        
-
-
+        $scope.select_current = function (obj){
+            $scope.me = {
+                x: parseFloat(obj.x),
+                y: parseFloat(obj.y),
+                z: parseFloat(obj.z)
+            }
+        };
     }
 ]);
 

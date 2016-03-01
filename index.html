@@ -16,15 +16,17 @@
   <script src="app.js" type="text/javascript"></script>
   <script src="ui-bootstrap-1.2.1.min.js" type="text/javascript"></script>
   <style type="text/css">
-   
+   .coord_input {
+    width: 100px;
+   }
   </style>
   </head>
   <body ng-controller="main">
   
   <div>
-    <input ng-model="me.x" type="number"></input>
-    <input ng-model="me.y" type="number"></input>
-    <input ng-model="me.z" type="number"></input>
+    <input ng-model="me.x" type="number" class="coord_input"></input>
+    <input ng-model="me.y" type="number" class="coord_input"></input>
+    <input ng-model="me.z" type="number" class="coord_input"></input>
     <button ng-click="recalculate_distances();">Update</button>
   </div>
 
@@ -40,7 +42,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="system in rare_systems | orderBy: 'distance'">
+      <tr ng-click="select_current(system);" ng-repeat="system in rare_systems | orderBy: 'distance'" style="cursor: pointer;">
         <td>{{ system.x | number: 2}}</td>
         <td>{{ system.y | number: 2}}</td>
         <td>{{ system.z | number: 2}}</td>
