@@ -62,6 +62,8 @@ app.controller("main", [
 
                 for (var i=0;i<$scope.rare_systems.length;i++){
                     var item = $scope.rare_systems[i];
+                    item.distance_of_influence = new Array();
+                    
                     if (!item.bought){
                         for (var j=0;j<$scope.trading.bought_list.length;j++)
                         {
