@@ -53,7 +53,10 @@
         <td>{{ system.price | number }}</td>
         <td>{{ system.supply_rate_min }}/{{ system.supply_rate_max }}</td>
         <td>{{ system.distance | number: 2 }}</td>
-        <td><button type="button" class="btn btn-group-xs btn-primary" ng-click="select_current(system);">I'm here</button></td>
+        <td>
+          <button type="button" class="btn btn-group-xs btn-primary" ng-click="select_current(system);">I'm here</button>
+          <button type="button" class="btn btn-group-xs btn-warning" ng-click="select_current(system);">Bought</button>
+          </td>
       </tr>
     </tbody>
   </table>
