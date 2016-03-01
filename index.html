@@ -28,7 +28,7 @@
     <input ng-model="me.y" type="number" class="coord_input"></input>
     <input ng-model="me.z" type="number" class="coord_input"></input>
     <button ng-click="recalculate_distances();">Update</button>
-    <input ng-model="search.system_name" ng-model-options="{debounce: 1000}" uib-typeahead="system for systems in list_systems($viewValue)"></input>
+    <input ng-model="search.system_name" ng-model-options="{debounce: 1000}"></input>
     <span ng-show="search.system_name_wrong" style="color: 'red'">There is no system with this name or edsm.net don't know coords</span>
   </div>
 
