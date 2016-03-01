@@ -14,6 +14,10 @@ app.controller("main", [
             y: 0.0,
             z: 0.0,
         }
+        $scope.search = {
+            system_name: "",
+            system_name_wrong: false
+        }
 
         // systems.get_rare_systems($scope.me).then(function (obj){
         //  $scope.rare_systems = obj;
@@ -24,6 +28,9 @@ app.controller("main", [
             //  return;
 
             $scope.recalculate_distances();
+        }, true);
+        $scope.$watch("search", function (oldVal, newVal){
+
         }, true);
 
         $scope.recalculate_distances = function (){
@@ -39,6 +46,17 @@ app.controller("main", [
                 z: parseFloat(obj.z)
             }
         };
+
+        $scope.list_systems = function (name) {
+            systems.get_coords_by_name(name).then(function (response){
+                if (response.data == "-1"){
+                    $scope.search.system_name_wrong = 1;
+                }else{
+                    $scope.search.system_name_wrong = 0;
+                    $scope.me = response.data.coords;
+                }
+            });
+        }
     }
 ]);
 
@@ -49,6 +67,10 @@ app.service("rest_data", [
         self.get_rare_systems = function (){
             return $http.get("/rare_systems.csv");
         }
+        self.get_coords_by_name = function (name){
+            return $http.get("http://www.edsm.net/api-v1/system?coords=1&systemName="+name);
+        }
+        //https://eddb.io/system/search?system%5Bmultiname%5D=uszaa
     }
 ]);
 
@@ -90,6 +112,9 @@ app.service("systems", [
             }
             return obj;
         };
+        self.get_coords_by_name = function (name){
+            return rest_data.get_coords_by_name(name);
+        }
 
         self._load_rare_systems = function (){
             return rest_data.get_rare_systems().then(function (response){
